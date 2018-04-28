@@ -1,5 +1,7 @@
 package etomica;
 
+import com.aparapi.Kernel;
+import com.aparapi.internal.kernel.KernelManager;
 import etomica.atom.IAtomList;
 import etomica.box.Box;
 import etomica.config.ConfigurationLattice;
@@ -24,12 +26,14 @@ import java.util.stream.IntStream;
 @Warmup(time = 1, iterations = 5)
 @Measurement(time = 5, timeUnit = TimeUnit.SECONDS, iterations = 5)
 public class BenchBox {
+    int SIZE = 1000;
     Box box;
-    double[][] coords = new double[1000][3];
-    double[] coords1d = new double[3 * 1000];
-    double[] coords1dColMajor = new double[3 * 1000];
+    double[][] coords = new double[SIZE][3];
+    double[] coords1d = new double[3 * SIZE];
+    double[] coords1dColMajor = new double[3 * SIZE];
     IVecSys vecSys;
     int off = coords1dColMajor.length / 3;
+    BenchBoxKernel kernel;
 
     @Setup(Level.Trial)
     public void setUp() {
@@ -38,7 +42,7 @@ public class BenchBox {
         SpeciesSpheresMono species = new SpeciesSpheresMono(sim, sim.getSpace());
         sim.addSpecies(species);
         box = sim.makeBox();
-        box.setNMolecules(species, 1000);
+        box.setNMolecules(species, SIZE);
         ConfigurationLattice config = new ConfigurationLattice(new LatticeCubicFcc(space), space);
         config.initializeCoordinates(box);
 
@@ -56,10 +60,60 @@ public class BenchBox {
             coords1dColMajor[2 * len + i] = pos.getX(2);
         }
         vecSys = new VectorSystem(coords1d);
+        kernel = new BenchBoxKernel(coords1d);
+        kernel.setExplicit(true);
+        kernel.put(kernel.coords);
+        kernel.put(kernel.sums);
 
     }
 
-//    @Benchmark
+    @TearDown
+    public void tearDown() {
+        kernel.dispose();
+    }
+
+    private static class BenchBoxKernel extends Kernel {
+        protected final float[] coords;
+        public final float[] sums;
+        public BenchBoxKernel(double[] coords1d) {
+            coords = new float[coords1d.length];
+            for (int i = 0; i < coords1d.length; i++) {
+                coords[i] = (float) coords1d[i];
+            }
+            sums = new float[coords1d.length / 3];
+            Arrays.fill(sums, 0);
+        }
+
+        @Override
+        public void run() {
+            int gid = getGlobalId();
+            float localSum = 0;
+            float x = coords[gid * 3 ];
+            float y = coords[gid * 3 + 1];
+            float z = coords[gid * 3 + 2];
+            for (int i = 0; i < getGlobalSize(); i+=3) {
+                float dx = x - coords[i * 3];
+                float dy = y - coords[i * 3 + 1];
+                float dz = z - coords[i * 3 + 2];
+                localSum += dx * dx + dy * dy + dz * dz;
+            }
+            sums[gid] = localSum;
+        }
+    }
+
+    @Benchmark
+    public double benchOpenCL() {
+        kernel.execute(coords1d.length / 3);
+        kernel.get(kernel.sums);
+        double sum = 0;
+        for (int i = 0; i < kernel.sums.length; i++) {
+            sum += kernel.sums.length;
+        }
+        return sum;
+    }
+
+
+    @Benchmark
     public double benchNormalBox() {
         Vector dr = box.getSpace().makeVector();
         double sum = 0;
@@ -75,7 +129,7 @@ public class BenchBox {
     }
 
 //    @Benchmark
-    public double benchCoords() {
+    public double benchCoordsLoopInvar() {
         double sum = 0;
         for (int i = 0; i < coords.length; i++) {
             final double x = coords[i][0];
@@ -91,13 +145,10 @@ public class BenchBox {
         return sum;
     }
 
-//    @Benchmark
-    public double benchCoordsNoLoopInvariant() {
+    @Benchmark
+    public double benchCoords() {
         double sum = 0;
         for (int i = 0; i < coords.length; i++) {
-//            double x = coords[i][0];
-//            double y = coords[i][1];
-//            double z = coords[i][2];
             for (int j = 0; j < coords.length; j++) {
                 double dx = coords[i][0] - coords[j][0];
                 double dy = coords[i][1] - coords[j][1];
@@ -109,7 +160,7 @@ public class BenchBox {
 
     }
 
-//    @Benchmark
+    @Benchmark
     public double benchCoords1d() {
         double sum = 0;
         for (int i = 0; i < coords.length; i++) {
@@ -126,7 +177,7 @@ public class BenchBox {
         return sum;
     }
 
-//    @Benchmark
+    @Benchmark
     public double benchCoords1dColMajor() {
         double sum = 0;
         for (int i = 0; i < coords.length; i++) {
@@ -143,7 +194,7 @@ public class BenchBox {
         return sum;
     }
 
-//    @Benchmark
+    @Benchmark
     public double benchCoordsParallel() {
         return IntStream.range(0, coords.length).parallel().mapToDouble(i -> {
             double sum = 0;
