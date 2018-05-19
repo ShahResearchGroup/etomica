@@ -73,6 +73,8 @@ project(':etomica-core') {
         compile 'com.github.therapi:therapi-runtime-javadoc:0.2.1'
         compile "io.github.lukehutch:fast-classpath-scanner:2.9.4"
 
+        compile "org.ejml:ejml-ddense:0.34"
+
         compile files("$rootProject.projectDir/libs/ptolemy.jar")
 
         compile project(':etomica-graphics3D')
@@ -87,6 +89,7 @@ project(':etomica-apps') {
     dependencies {
         compile project(':etomica-core')
         compile project(':etomica-graph')
+
     }
 }
 

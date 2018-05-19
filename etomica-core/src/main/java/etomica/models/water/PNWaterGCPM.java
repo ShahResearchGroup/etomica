@@ -24,6 +24,9 @@ import etomica.units.Kelvin;
 
 import java.util.Arrays;
 import org.apache.commons.math3.special.Erf;
+import org.ejml.data.DMatrix;
+import org.ejml.data.DMatrixRMaj;
+import org.ejml.dense.row.CommonOps_DDRM;
 
 /**
  * GCPM Water potential class.  This class assumes assumes no periodic
@@ -263,23 +266,25 @@ public class PNWaterGCPM extends PotentialMolecular implements PotentialPolariza
     public double getPolarizationEnergy(IMoleculeList molecules) {
 
         final int molCount = molecules.size();
-        if (Eq.length < molCount + 1) {
-            Eq = Arrays.copyOf(Eq, molCount + 1);
-            A = Arrays.copyOf(A, molCount + 1);
-        }
-        if (Eq[molCount] == null) {
-            Eq[molCount] = new Matrix(3 * molCount, 1);
-            A[molCount] = new Matrix(3 * molCount, 3 * molCount);
-
-            for (int i = 0; i < 3 * molCount; i++) {
-                A[molCount].set(i, i, 1);
-            }
-        }
-        final Matrix myEq = Eq[molCount];
-        final Matrix myA = A[molCount];
-        for (int i = 0; i < 3 * molCount; i++) {
-            myEq.set(i, 0, 0);
-        }
+//        if (Eq.length < molCount + 1) {
+//            Eq = Arrays.copyOf(Eq, molCount + 1);
+//            A = Arrays.copyOf(A, molCount + 1);
+//        }
+//        if (Eq[molCount] == null) {
+//            Eq[molCount] = new Matrix(3 * molCount, 1);
+//            A[molCount] = new Matrix(3 * molCount, 3 * molCount);
+//
+//            for (int i = 0; i < 3 * molCount; i++) {
+//                A[molCount].set(i, i, 1);
+//            }
+//        }
+//        final Matrix myEq = Eq[molCount];
+//        final Matrix myA = A[molCount];
+//        for (int i = 0; i < 3 * molCount; i++) {
+//            myEq.set(i, 0, 0);
+//        }
+        final DMatrixRMaj myEq = new DMatrixRMaj(3 * molCount, 1);
+        final DMatrixRMaj myA = CommonOps_DDRM.identity(3 * molCount);
 
         /*
          * Finding the Electric fields at the center of mass of each molecule, Eqi
@@ -341,27 +346,27 @@ public class PNWaterGCPM extends PotentialMolecular implements PotentialPolariza
                 work.Ev1Mv2(comWi, Hj1r);
                 work.PE(shift);
                 work.TE(fac);
-                myEq.set(i * 3 + 0, 0, myEq.get(i * 3 + 0, 0) + work.getX(0));
-                myEq.set(i * 3 + 1, 0, myEq.get(i * 3 + 1, 0) + work.getX(1));
-                myEq.set(i * 3 + 2, 0, myEq.get(i * 3 + 2, 0) + work.getX(2));
+                myEq.unsafe_set(i * 3 + 0, 0, myEq.unsafe_get(i * 3 + 0, 0) + work.getX(0));
+                myEq.unsafe_set(i * 3 + 1, 0, myEq.unsafe_get(i * 3 + 1, 0) + work.getX(1));
+                myEq.unsafe_set(i * 3 + 2, 0, myEq.unsafe_get(i * 3 + 2, 0) + work.getX(2));
 
                 fac = chargeH / (comWtoH2 * comWtoH2 * comWtoH2) * ((1 - erfc(comWtoH2 / sqrtHMsigmas))
                         - Math.sqrt(2) * comWtoH2 / sqrtPiHMsigmas * Math.exp(-comWtoH2 * comWtoH2 / (2 * (sigmaM * sigmaM + sigmaH * sigmaH))));
                 work.Ev1Mv2(comWi, Hj2r);
                 work.PE(shift);
                 work.TE(fac);
-                myEq.set(i * 3 + 0, 0, myEq.get(i * 3 + 0, 0) + work.getX(0));
-                myEq.set(i * 3 + 1, 0, myEq.get(i * 3 + 1, 0) + work.getX(1));
-                myEq.set(i * 3 + 2, 0, myEq.get(i * 3 + 2, 0) + work.getX(2));
+                myEq.unsafe_set(i * 3 + 0, 0, myEq.unsafe_get(i * 3 + 0, 0) + work.getX(0));
+                myEq.unsafe_set(i * 3 + 1, 0, myEq.unsafe_get(i * 3 + 1, 0) + work.getX(1));
+                myEq.unsafe_set(i * 3 + 2, 0, myEq.unsafe_get(i * 3 + 2, 0) + work.getX(2));
 
                 fac = chargeM / (comWtoM * comWtoM * comWtoM) * ((1 - erfc(comWtoM / (2 * sigmaM)))
                         - Math.sqrt(2) * comWtoM / sqrtPiMMsigmas * Math.exp(-comWtoM * comWtoM / (4 * sigmaM * sigmaM)));
                 work.Ev1Mv2(comWi, Mjr);
                 work.PE(shift);
                 work.TE(fac);
-                myEq.set(i * 3 + 0, 0, myEq.get(i * 3 + 0, 0) + work.getX(0));
-                myEq.set(i * 3 + 1, 0, myEq.get(i * 3 + 1, 0) + work.getX(1));
-                myEq.set(i * 3 + 2, 0, myEq.get(i * 3 + 2, 0) + work.getX(2));
+                myEq.unsafe_set(i * 3 + 0, 0, myEq.unsafe_get(i * 3 + 0, 0) + work.getX(0));
+                myEq.unsafe_set(i * 3 + 1, 0, myEq.unsafe_get(i * 3 + 1, 0) + work.getX(1));
+                myEq.unsafe_set(i * 3 + 2, 0, myEq.unsafe_get(i * 3 + 2, 0) + work.getX(2));
 
 //                if (i==0) {System.out.println("after "+j); myEq.print(20,12);}
 
@@ -408,8 +413,8 @@ public class PNWaterGCPM extends PotentialMolecular implements PotentialPolariza
                     int nOffset = j * 3;
                     for (int m = 0; m < 3; m++) {
                         for (int n = 0; n < 3; n++) {
-                            myA.set(mOffset + m, nOffset + n, -Tij.component(m, n));
-                            myA.set(nOffset + n, mOffset + m, -Tij.component(n, m));
+                            myA.unsafe_set(mOffset + m, nOffset + n, -Tij.component(m, n));
+                            myA.unsafe_set(nOffset + n, mOffset + m, -Tij.component(n, m));
                         }
                     }
                 }
@@ -420,35 +425,37 @@ public class PNWaterGCPM extends PotentialMolecular implements PotentialPolariza
         //For x to be P, the A of the Ax=b actually needs an extra factor of
         //alphaPol.  We'll add that bit in when we calculate UpolAtkins.
 
-        Matrix x = myA.solve(myEq);//myA*x=myEq
+//        Matrix x = myA.solve(myEq);//myA*x=myEq
+        DMatrixRMaj x = new DMatrixRMaj(3 * molCount, 1);
+        CommonOps_DDRM.solve(myA, myEq, x);
 
         if (false) {
             // this is (mathematically) what we want.  But Jama is slow.
-            UpolAtkins = -0.5 * (x.transpose().times(myEq)).get(0, 0) * alphaPol;
+//            UpolAtkins = -0.5 * (x.transpose().times(myEq)).get(0, 0) * alphaPol;
         } else {
             UpolAtkins = 0;
             for (int i = 0; i < 3 * molCount; i++) {
-                UpolAtkins += x.get(i, 0) * myEq.get(i, 0);
+                UpolAtkins += x.unsafe_get(i, 0) * myEq.unsafe_get(i, 0);
             }
             UpolAtkins *= -0.5 * alphaPol;
         }
 
         // only needed for more complicated Eq8 from Cummings paper
-        if (false) {
-
-            // for the sake of clarity (over perf), just multiply x by alphaPol
-            // (see comment above about A lacking alphaPol)
-            x.timesEquals(alphaPol);
-            Matrix Ep = myA.times(x).minus(x);
-            Ep.timesEquals(-1 / alphaPol);
-
-            double x2NormF = x.normF();
-            double UpolEquation8 = 2 * UpolAtkins - 0.5 * (x.transpose().times(Ep).get(0, 0)) + (0.5 / alphaPol) * (x2NormF * x2NormF);
-
-            if (Math.abs(UpolAtkins - UpolEquation8) > 1.e-6) {
-                throw new RuntimeException("oops " + UpolAtkins + " " + UpolEquation8);
-            }
-        }
+//        if (false) {
+//
+//            // for the sake of clarity (over perf), just multiply x by alphaPol
+//            // (see comment above about A lacking alphaPol)
+//            x.timesEquals(alphaPol);
+//            Matrix Ep = myA.times(x).minus(x);
+//            Ep.timesEquals(-1 / alphaPol);
+//
+//            double x2NormF = x.normF();
+//            double UpolEquation8 = 2 * UpolAtkins - 0.5 * (x.transpose().times(Ep).get(0, 0)) + (0.5 / alphaPol) * (x2NormF * x2NormF);
+//
+//            if (Math.abs(UpolAtkins - UpolEquation8) > 1.e-6) {
+//                throw new RuntimeException("oops " + UpolAtkins + " " + UpolEquation8);
+//            }
+//        }
 
         return UpolAtkins;
     }
