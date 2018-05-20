@@ -1,9 +1,10 @@
 package etomica.util.random;
 
+
 /*
  * DSI utilities
  *
- * Copyright (C) 2013-2017 Sebastiano Vigna
+ * Copyright (C) 2013-2018 Sebastiano Vigna
  *
  *  This library is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU Lesser General Public License as published by the Free
@@ -20,64 +21,74 @@ package etomica.util.random;
  *
  */
 
+import java.security.SecureRandom;
 import java.util.Random;
+import java.util.SplittableRandom;
 
-/** A fast, high-quality {@linkplain Random pseudorandom number generator} that
- * returns the sum of consecutive outputs of a handcrafted linear generator with 128 bits of state. It improves
- * upon {@link XorShift128PlusRandom xorshift128+}
- * under every respect: it is faster and has stronger statistical properties.
- * More details can be found on the <a href="http://xorshift.di.unimi.it/"><code>xoroshiro+</code>/<code>xorshift*</code>/<code>xorshift+</code>
- * generators and the PRNG shootout</a> page.
+import org.apache.commons.math3.random.RandomGenerator;
+
+/** A fast, all-purpose, rock-solid {@linkplain Random pseudorandom number generator}. It has excellent speed, a state space (256 bits) that is large enough for
+ * any parallel application, and it passes all tests we are aware of. More information can be found at our <a href="http://prng.di.unimi.it/">PRNG page</a>.
  *
- * <p><strong>Warning</strong>: the output of this generator might change in the near future.
- *
- * <p>Note that this is
- * <strong>not</strong> a cryptographic-strength pseudorandom number generator, but its quality is
- * preposterously higher than {@link Random}'s, and its cycle length is
- * 2<sup>128</sup>&nbsp;&minus;&nbsp;1, which is more than enough for any single-thread application.
+ * <p>If you need to generate just floating-point numbers, {@link XoShiRo256PlusRandom} is slightly faster. If you are tight on space,
+ * you might try {@link XoRoShiRo128StarStarRandom}.
  *
  * <p>By using the supplied {@link #jump()} method it is possible to generate non-overlapping long sequences
  * for parallel computations. This class provides also a {@link #split()} method to support recursive parallel computations, in the spirit of
- * Java 8's <a href="http://docs.oracle.com/javase/8/docs/api/java/util/SplittableRandom.html"><code>SplittableRandom</code></a>.
+ * {@link SplittableRandom}.
  *
+ * <p>Note that this is not a {@linkplain SecureRandom secure generator}.
+ *
+ * @version 1.0
  * @see it.unimi.dsi.util
  * @see RandomGenerator
+ * @see XoShiRo256StarStarRandomGenerator
  */
 
-@SuppressWarnings({"javadoc", "JavadocReference"})
-public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
+
+@SuppressWarnings("JavadocReference")
+public class XoShiRo256StarStarRandom extends Random implements IRandom {
     private static final long serialVersionUID = 1L;
     /** The internal state of the algorithm. */
-    private long s0, s1;
+    private long s0, s1, s2, s3;
 
     /** Creates a new generator seeded using {@link Util#randomSeed()}. */
-    public XoRoShiRo128PlusRandom() {
+    public XoShiRo256StarStarRandom() {
         // TODO: better initial seed
-        this(new Random().nextLong());
+        this((new Random()).nextLong());
     }
 
     /** Creates a new generator using a given seed.
      *
      * @param seed a seed for the generator.
      */
-    public XoRoShiRo128PlusRandom(final long seed) {
+    public XoShiRo256StarStarRandom(final long seed) {
         setSeed(seed);
     }
 
     @Override
     public long nextLong() {
-        final long s0 = this.s0;
-        long s1 = this.s1;
-        final long result = s0 + s1;
-        s1 ^= s0;
-        this.s0 = Long.rotateLeft(s0, 55) ^ s1 ^ s1 << 14;
-        this.s1 = Long.rotateLeft(s1, 36);
+        long result = s1;
+        result = Long.rotateLeft(result + (result << 2), 7);
+        result += result << 3;
+
+        final long t = s1 << 17;
+
+        s2 ^= s0;
+        s3 ^= s1;
+        s1 ^= s2;
+        s0 ^= s3;
+
+        s2 ^= t;
+
+        s3 = Long.rotateLeft(s3, 45);
+
         return result;
     }
 
     @Override
     public int nextInt() {
-        return (int)(nextLong() >>> 32);
+        return (int)nextLong();
     }
 
     @Override
@@ -98,24 +109,19 @@ public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
         if (n <= 0) throw new IllegalArgumentException("illegal bound " + n + " (must be positive)");
         long t = nextLong();
         final long nMinus1 = n - 1;
-        // Shortcut for powers of two--high bits
-        if ((n & nMinus1) == 0) return (t >>> Long.numberOfLeadingZeros(nMinus1)) & nMinus1;
         // Rejection-based algorithm to get uniform integers in the general case
         for (long u = t >>> 1; u + nMinus1 - (t = u % n) < 0; u = nextLong() >>> 1);
         return t;
     }
 
     @Override
+    public double nextDouble() {
+        return (nextLong() >>> 11) * 0x1.0p-53;
+    }
+
+    @Override
     public double nextFixedDouble() {
         return this.nextDoubleFast();
-    }
-
-    public double nextDouble() {
-        return this.nextDoubleFast();
-    }
-
-    public double _nextDouble() {
-        return (nextLong() >>> 11) * 0x1.0p-53;
     }
 
     /**
@@ -139,8 +145,6 @@ public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
      * @return the next pseudorandom, uniformly distributed {@code double}
      * value between {@code 0.0} and {@code 1.0} from this
      * random number generator's sequence, using 52 significant bits only.
-     *
-     * @since 2.4.1
      */
     public double nextDoubleFast() {
         return Double.longBitsToDouble(0x3FFL << 52 | nextLong() >>> 12) - 1.0;
@@ -165,7 +169,7 @@ public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
         }
     }
 
-    private static final long JUMP[] = 	{ 0xbeac0467eba5facbL, 0xd86b048b86aa9922L };
+    private static final long JUMP[] = { 0x180ec6d33cfd0abaL, 0xd5a61266f0c9392cL, 0xa9582618e03fc9aaL, 0x39abdc4529b1661cL };
 
     /** The the jump function for this generator. It is equivalent to 2<sup>64</sup>
      * calls to {@link #nextLong()}; it can be used to generate 2<sup>64</sup>
@@ -174,32 +178,40 @@ public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
     public void jump() {
         long s0 = 0;
         long s1 = 0;
+        long s2 = 0;
+        long s3 = 0;
         for(int i = 0; i < JUMP.length; i++)
             for(int b = 0; b < 64; b++) {
                 if ((JUMP[i] & 1L << b) != 0) {
                     s0 ^= this.s0;
                     s1 ^= this.s1;
+                    s2 ^= this.s2;
+                    s3 ^= this.s3;
                 }
                 nextLong();
             }
 
         this.s0 = s0;
         this.s1 = s1;
+        this.s2 = s2;
+        this.s3 = s3;
     }
 
-//    /**
-//     * Returns a new instance that shares no mutable state
-//     * with this instance. The sequence generated by the new instance
-//     * depends deterministically from the state of this instance,
-//     * but the probability that the sequence generated by this
-//     * instance and by the new instance overlap is negligible.
-//     *
-//     * @return the new instance.
-//     */
-//    public XoRoShiRo128PlusRandom split() {
-//        final XoRoShiRo128PlusRandom split = new XoRoShiRo128PlusRandom();
+    /**
+     * Returns a new instance that shares no mutable state
+     * with this instance. The sequence generated by the new instance
+     * depends deterministically from the state of this instance,
+     * but the probability that the sequence generated by this
+     * instance and by the new instance overlap is negligible.
+     *
+     * @return the new instance.
+     */
+//    public XoShiRo256StarStarRandom split() {
+//        final XoShiRo256StarStarRandom split = new XoShiRo256StarStarRandom();
 //        split.s0 = HashCommon.murmurHash3(s0);
 //        split.s1 = HashCommon.murmurHash3(s1);
+//        split.s2 = HashCommon.murmurHash3(s2);
+//        split.s3 = HashCommon.murmurHash3(s3);
 //        return split;
 //    }
 
@@ -214,9 +226,12 @@ public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
      */
     @Override
     public void setSeed(final long seed) {
-        final Random r = new Random(seed);
+//        final SplitMix64RandomGenerator r = new SplitMix64RandomGenerator(seed);
+        Random r = new Random(seed);
         s0 = r.nextLong();
         s1 = r.nextLong();
+        s2 = r.nextLong();
+        s3 = r.nextLong();
     }
 
 
@@ -227,9 +242,10 @@ public final class XoRoShiRo128PlusRandom extends Random implements IRandom {
      * @param state an array of 2 longs; at least one must be nonzero.
      */
     public void setState(final long[] state) {
-        if (state.length != 2) throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
+        if (state.length != 4) throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
         s0 = state[0];
         s1 = state[1];
+        s2 = state[2];
+        s3 = state[3];
     }
 }
-

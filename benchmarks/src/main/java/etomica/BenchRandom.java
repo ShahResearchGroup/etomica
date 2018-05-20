@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @Fork(value = 1)
 public class BenchRandom {
-    @Param({"mersennetwister", "xoroshiro", "java"})
+    @Param({"mersennetwister", "xoroshiro", "java", "256StarStar", "256Plus"})
     private String type;
 
     private IRandom random;
@@ -32,6 +32,13 @@ public class BenchRandom {
                 break;
             case "java":
                 random = new RandomNumberGenerator();
+                break;
+            case "256StarStar":
+                random = new XoShiRo256StarStarRandom();
+                break;
+            case "256Plus":
+                random = new XoRoShiRo128PlusRandom();
+                break;
         }
     }
 
