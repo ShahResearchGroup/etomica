@@ -16,7 +16,8 @@ import etomica.util.Arrays;
  * DataFork.  If a caster is added, it is not accessible externally to this class; all public methods deal
  * only with the DataSinks.
  */
-public class DataFork implements DataPipeForked {
+public class
+DataFork implements DataPipeForked {
 
     protected final DataTag tag;
     protected IDataSink[] dataSinkList = new IDataSink[0];

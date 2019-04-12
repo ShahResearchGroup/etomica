@@ -31,8 +31,8 @@ import etomica.space.Vector;
 import etomica.space3d.Space3D;
 import etomica.species.ISpecies;
 import etomica.units.*;
-import etomica.units.dimensions.*;
 import etomica.units.dimensions.Dimension;
+import etomica.units.dimensions.*;
 import etomica.util.Constants.CompassDirection;
 import etomica.util.ParameterBase;
 import etomica.util.ParseArgs;
@@ -125,7 +125,6 @@ public class VirialAlkaneFull {
         ClusterSum refCluster = rigidDiagrams.makeVirialCluster(fRef);
 
         double refIntegral = HSB[nPoints];
-
         ClusterSumShell[] targetDiagrams = new ClusterSumShell[0];
         int[] targetDiagramNumbers = new int[0];
         boolean[] diagramFlexCorrection = null;
@@ -146,7 +145,6 @@ public class VirialAlkaneFull {
                 if (cancelGraph != null) {
                     diagramFlexCorrection[iGraph] = true;
                     Set<Graph> gSplit = alkaneDiagrams.getSplitDisconnectedVirialGraphs(cancelGraph);
-
                     System.out.print(" - "+getSplitGraphString(gSplit, alkaneDiagrams, false));
 
                 }
@@ -281,7 +279,7 @@ public class VirialAlkaneFull {
             pIntra.addPotential(p2CH2,new ApiIndexList(pairs));
         }
 
-        if (false) {
+        if (true) {
             double size = (nSpheres+5)*1.5;
             sim.box[0].getBoundary().setBoxSize(Vector.of(new double[]{size, size, size}));
             sim.box[1].getBoundary().setBoxSize(Vector.of(new double[]{size, size, size}));
@@ -462,7 +460,7 @@ public class VirialAlkaneFull {
      * Inner class for parameters
      */
     public static class VirialSiepmannSpheresParam extends ParameterBase {
-        public int nPoints = 4;
+        public int nPoints = 3;
         public int nSpheres = 3;
         public double temperature = 298.0;// Kelvin
         public long numSteps = 1000000;

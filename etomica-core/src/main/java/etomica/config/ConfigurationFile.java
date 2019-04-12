@@ -4,14 +4,14 @@
 
 package etomica.config;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-
 import etomica.atom.IAtom;
 import etomica.atom.IAtomList;
 import etomica.box.Box;
 import etomica.space.Vector;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * reads configuration coordinates from a file and assigns them to the leaf atoms in a box
@@ -45,10 +45,10 @@ public class ConfigurationFile implements Configuration, java.io.Serializable {
     }
         
     protected void setPosition(IAtom atom, String string) {
-        String[] coordStr = string.split("[ \t]+");
+        String[] coordStr = string.split("[ ]+");
         Vector pos = atom.getPosition();
         for (int i=0; i<pos.getD(); i++) {
-            pos.setX(i, Double.valueOf(coordStr[i]).doubleValue());
+            pos.setX(i, Double.valueOf(coordStr[i]));
         }
     }
     

@@ -4,11 +4,11 @@
 
 package etomica.units.dimensions;
 
-import java.io.ObjectStreamException;
-
 import etomica.units.Dalton;
 import etomica.units.Unit;
 import etomica.units.systems.UnitSystem;
+
+import java.io.ObjectStreamException;
 
 /**
  * Dimension for all units of mass. Simulation unit for mass is the Dalton (or atomic

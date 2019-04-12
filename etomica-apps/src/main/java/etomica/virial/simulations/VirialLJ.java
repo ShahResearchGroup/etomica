@@ -44,7 +44,7 @@ public class VirialLJ {
         }
         ParseArgs.doParseArgs(params, args);
         if (args.length == 0) {
-            params.nPoints = 4;
+            params.nPoints = 2;
             params.temperature = 1;
             params.numSteps = 10000000L;
             params.doChainRef = true;
@@ -107,7 +107,7 @@ public class VirialLJ {
         
         sim.integratorOS.setAggressiveAdjustStepFraction(true);
 
-        if (false) {
+        if (true) {
             sim.box[0].getBoundary().setBoxSize(Vector.of(new double[]{10, 10, 10}));
             sim.box[1].getBoundary().setBoxSize(Vector.of(new double[]{10, 10, 10}));
             SimulationGraphic simGraphic = new SimulationGraphic(sim, SimulationGraphic.TABBED_PANE);

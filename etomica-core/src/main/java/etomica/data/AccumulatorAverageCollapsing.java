@@ -20,7 +20,8 @@ import java.util.Arrays;
  * <p>
  * This accumulator can only operate on Data with a single value.
  */
-public class AccumulatorAverageCollapsing extends AccumulatorAverage {
+public class
+AccumulatorAverageCollapsing extends AccumulatorAverage {
 
     protected int maxBlocks;
     protected double[] blockSums;

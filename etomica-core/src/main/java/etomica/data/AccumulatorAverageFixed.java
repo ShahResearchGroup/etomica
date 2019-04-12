@@ -127,6 +127,7 @@ public class AccumulatorAverageFixed extends AccumulatorAverage {
     
     public void putDataInfo(IDataInfo inputDataInfo) {
         super.putDataInfo(inputDataInfo);
+
         if (blockDataSink != null) {
             blockDataSink.putDataInfo(inputDataInfo);
         }

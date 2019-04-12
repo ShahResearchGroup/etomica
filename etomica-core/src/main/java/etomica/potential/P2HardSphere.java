@@ -6,9 +6,9 @@ package etomica.potential;
 
 import etomica.atom.IAtomKinetic;
 import etomica.atom.IAtomList;
-import etomica.space.Vector;
 import etomica.space.Space;
 import etomica.space.Tensor;
+import etomica.space.Vector;
 import etomica.units.dimensions.Dimension;
 import etomica.units.dimensions.Length;
 import etomica.util.Debug;
@@ -37,7 +37,8 @@ public class P2HardSphere extends Potential2HardSpherical {
     protected final boolean ignoreOverlap;
     protected final Vector dv;
     protected final Tensor lastCollisionVirialTensor;
-    
+
+
     public P2HardSphere(Space space) {
         this(space, 1.0, false);
     }

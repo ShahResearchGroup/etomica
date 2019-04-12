@@ -109,6 +109,7 @@ public class DataLogger extends DataProcessor implements IListener, java.io.Seri
             if(fileName == "") fileName = defaultFileName(); //if fileName is not defined yet, use the current date to be the fileName.
             fileWriter = new FileWriter(fileName + fileNameSuffix, appending);
             if (!appending) {
+
                 ((DataWriter) dataSink).reset();
             }
             fileIsOpen = true;

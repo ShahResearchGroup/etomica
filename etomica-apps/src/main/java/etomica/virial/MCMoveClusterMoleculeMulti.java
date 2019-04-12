@@ -27,7 +27,7 @@ public class MCMoveClusterMoleculeMulti extends MCMoveMolecule {
     protected int startMolecule;
 
     public MCMoveClusterMoleculeMulti(Simulation sim, Space _space) {
-    	this(null, sim.getRandom(), _space, 1.0);
+        this(null, sim.getRandom(), _space, 3.0);
     }
     
     public MCMoveClusterMoleculeMulti(PotentialMaster potentialMaster,

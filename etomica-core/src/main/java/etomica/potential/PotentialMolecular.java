@@ -14,7 +14,8 @@ import etomica.space.Space;
  *
  * @author David Kofke
  */
- 
+
+
 public abstract class PotentialMolecular implements IPotentialMolecular {
     
 	protected final int nBody;
@@ -45,7 +46,10 @@ public abstract class PotentialMolecular implements IPotentialMolecular {
      * coordinatePair (if it uses one), e.g.:
      * cPair.setNearestImageTransformer(box.boundary());
      */
-    public abstract void setBox(Box box);
+    public abstract void
+
+
+    setBox(Box box);
     
     /**
      * The number of atoms on which the potential depends.

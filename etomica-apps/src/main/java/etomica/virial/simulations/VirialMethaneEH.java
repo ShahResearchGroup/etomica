@@ -6,13 +6,13 @@ package etomica.virial.simulations;
 
 import etomica.AlkaneEH.SpeciesMethane;
 import etomica.action.IAction;
-import etomica.integrator.IntegratorEvent;
-import etomica.integrator.IntegratorListener;
 import etomica.atom.AtomType;
 import etomica.atom.DiameterHashByType;
 import etomica.atom.iterator.ApiBuilder;
 import etomica.graphics.ColorSchemeByType;
 import etomica.graphics.SimulationGraphic;
+import etomica.integrator.IntegratorEvent;
+import etomica.integrator.IntegratorListener;
 import etomica.potential.P2LennardJones;
 import etomica.potential.PotentialGroup;
 import etomica.space.Space;
@@ -106,7 +106,7 @@ public class VirialMethaneEH {
         pTargetGroup.addPotential(p2CH, ApiBuilder.makeIntergroupTypeIterator(new AtomType[]{typeH, typeC}));//H-C
         pTargetGroup.addPotential(p2H, ApiBuilder.makeIntergroupTypeIterator(new AtomType[]{typeH, typeH}));//H-H
 
-        if (false) {
+        if (true) {
             double size = 5.0;
             sim.box[0].getBoundary().setBoxSize(Vector.of(new double[]{size, size, size}));
             sim.box[1].getBoundary().setBoxSize(Vector.of(new double[]{size, size, size}));

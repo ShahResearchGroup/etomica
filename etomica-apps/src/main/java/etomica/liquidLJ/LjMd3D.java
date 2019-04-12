@@ -104,6 +104,7 @@ public class LjMd3D extends Simulation {
         integrator.setThermostat(ThermostatType.HYBRID_MC);
         integrator.setThermostatInterval(hybridInterval);
 
+
         integrator.getEventManager().addListener(potentialMasterList.getNeighborManager(box));
 
         ConfigurationLattice configuration = new ConfigurationLattice(new LatticeCubicFcc(space), space);
@@ -177,6 +178,7 @@ public class LjMd3D extends Simulation {
             params.pFast = Double.NaN;
             params.pFull = 0.2;
         }
+
 
         final int numAtoms = params.numAtoms;
         final double temperature = params.temperature;
@@ -1128,7 +1130,7 @@ public class LjMd3D extends Simulation {
         public int hybridInterval = 20;
         public double rcShort = 2.5;
         public double rcLong = 6;
-        public boolean graphics = false;
+        public boolean graphics = true;
         public int nAccBlocks = 100;
         public boolean calcMu = false;
         public double pFast = Double.NaN;

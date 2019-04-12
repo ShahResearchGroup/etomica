@@ -178,6 +178,7 @@ public class PotentialGroup extends PotentialMolecular {
             if (link.potential.getRange() > range) {
                 range = link.potential.getRange();
             }
+
         }
         return range;
     }

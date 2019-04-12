@@ -740,7 +740,8 @@ public class SimulationVirialOverlap2 extends Simulation {
     protected HistogramNotSoSimple targPiHist;
     
     public static class BoxClusterFactory {
-        public BoxCluster makeBox(Space space, ClusterWeight sampleCluster) {
+        public BoxCluster
+        makeBox(Space space, ClusterWeight sampleCluster) {
             return new BoxCluster(sampleCluster, space);
         }
     }

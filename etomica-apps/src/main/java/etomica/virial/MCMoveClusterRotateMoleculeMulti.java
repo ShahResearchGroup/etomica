@@ -13,7 +13,7 @@ import etomica.util.random.IRandom;
 
 /**
  * MCMove for use in a Mayer sampling simulation that rotates all molecules in
- * a Box except the first molecule, which is never moved.  The angle of
+ * a Box.  The angle of
  * rotation is the step size and can be tuned for some acceptance rate.
  */
 public class MCMoveClusterRotateMoleculeMulti extends MCMoveRotateMolecule3D {
@@ -54,7 +54,9 @@ public class MCMoveClusterRotateMoleculeMulti extends MCMoveRotateMolecule3D {
         for (int i = 0; i<moleculeList.size(); i++) {
             molecule = moleculeList.get(i);
             r0.E(positionDefinition.position(molecule));
-
+//            if (box.getIndex() == 0) {
+//                System.out.println("COM Rotate: " + r0);
+//            }
             int j = constraintMap[i];
             if (j == i) {
                 theta[j] = (2*random.nextDouble() - 1.0)*stepSize;
@@ -68,6 +70,9 @@ public class MCMoveClusterRotateMoleculeMulti extends MCMoveRotateMolecule3D {
             if (doRelax && relaxAction != null) {
                 relaxAction.actionPerformed(molecule);
             }
+//            if (box.getIndex() == 0){
+//            System.out.println("COM Rotate: " + positionDefinition.position(molecule));
+//            }
         }
 
         ((BoxCluster)box).trialNotify();

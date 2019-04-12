@@ -26,7 +26,8 @@ import etomica.units.Kelvin;
  * 
  * @author Tai Boon Tan
  */
-public class P2Nitrogen extends PotentialMolecular implements IPotentialMolecularTorque {
+public class
+P2Nitrogen extends PotentialMolecular implements IPotentialMolecularTorque {
 
 	public P2Nitrogen(Space space, double rC) {
 		super(2, space);

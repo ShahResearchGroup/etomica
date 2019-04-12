@@ -61,6 +61,7 @@ public class P2WCA extends Potential2SoftSpherical {
             double s2 = sigmaSquared/r2;
             s6 = s2*s2*s2;
             du = -epsilon48*s6*(s6 - 0.5);
+//            System.out.println(Math.sqrt(r2)+" "+du);
         }
 //        System.out.println("r2, du: "+r2 + "  "+du);
         return du;

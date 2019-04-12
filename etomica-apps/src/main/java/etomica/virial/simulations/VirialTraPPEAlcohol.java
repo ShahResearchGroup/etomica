@@ -46,7 +46,7 @@ public class VirialTraPPEAlcohol {
     // ethanol = false: methanol
     // ethanol = true: ethanol
     protected static boolean ethanol = false;
-    protected static boolean graphics = false;
+    protected static boolean graphics = true;
     
     public static void main(String[] args) {
 

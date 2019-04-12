@@ -97,8 +97,8 @@ public class SimulationVirial extends Simulation {
 		setSeeds(seeds);
 		init();
 	}
-	
-	public void init() {
+
+    public void init() {
         if (seeds != null) {
             setRandom(new RandomMersenneTwister(seeds));
         }

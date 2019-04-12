@@ -30,8 +30,8 @@ import etomica.species.SpeciesSpheresHetero;
 import etomica.units.BohrRadius;
 import etomica.units.Kelvin;
 import etomica.units.Pixel;
-import etomica.units.dimensions.*;
 import etomica.units.dimensions.Dimension;
+import etomica.units.dimensions.*;
 import etomica.util.Constants;
 import etomica.util.Constants.CompassDirection;
 import etomica.util.ParameterBase;
@@ -199,7 +199,7 @@ public class VirialH2PIXC {
 		sim.box.acceptNotify();
 		//        System.out.println(" "+sim.box.getSampleCluster().value(sim.box));
 
-		if (false) {
+        if (true) {
 			double vSize = 10;
 			sim.box.getBoundary().setBoxSize(Vector.of(new double[]{vSize, vSize, vSize}));
 			SimulationGraphic simGraphic = new SimulationGraphic(sim, SimulationGraphic.TABBED_PANE);

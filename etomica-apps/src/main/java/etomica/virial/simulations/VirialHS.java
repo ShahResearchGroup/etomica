@@ -46,7 +46,7 @@ public class VirialHS {
             ParseArgs.doParseArgs(params, args);
         }
         else {
-            params.nPoints = 7;
+            params.nPoints = 3;
             params.numSteps = 1000000L;
             params.ref = VirialHSParam.TREE;
             params.chainFrac = 0.2;
@@ -322,7 +322,7 @@ public class VirialHS {
             sim.integrator.getMoveManager().setFrequency(mcMoveHST, 1-ringFrac-chainFrac);
         }
 
-        if (false) {
+        if (true) {
             sim.box.getBoundary().setBoxSize(Vector.of(new double[]{10, 10, 10}));
             SimulationGraphic simGraphic = new SimulationGraphic(sim, SimulationGraphic.TABBED_PANE);
             DisplayBox displayBox0 = simGraphic.getDisplayBox(sim.box); 

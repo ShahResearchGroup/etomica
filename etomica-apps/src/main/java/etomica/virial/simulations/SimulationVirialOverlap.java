@@ -24,6 +24,8 @@ import etomica.virial.overlap.IntegratorOverlap;
 
 import java.io.*;
 
+//import etomica.overlap.IntegratorOverlap;
+
 /**
  * @author kofke
  *
@@ -141,6 +143,7 @@ public class SimulationVirialOverlap extends Simulation {
         
         setRefPref(1,5);
         integratorOS = new IntegratorOverlap(integrators);
+//        integratorOS = new IntegratorOverlap(integrators);
         integratorOS.setNumSubSteps(1000);
         integratorOS.setEventInterval(1);
         ai = new ActivityIntegrate(integratorOS);

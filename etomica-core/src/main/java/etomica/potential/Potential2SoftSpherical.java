@@ -5,11 +5,11 @@
 package etomica.potential;
 
 import etomica.atom.IAtomList;
-import etomica.space.Boundary;
 import etomica.box.Box;
-import etomica.space.Vector;
+import etomica.space.Boundary;
 import etomica.space.Space;
 import etomica.space.Tensor;
+import etomica.space.Vector;
 
 /**
  * Methods for a soft (non-impulsive), spherically-symmetric pair potential.
@@ -90,6 +90,10 @@ public abstract class Potential2SoftSpherical extends Potential2 implements Pote
             gradient[1].E(0);
             return gradient;
         }
+//        if (du(r2)<-100) {
+//            System.out.println(atoms+" "+r2+" "+du(r2));
+//            throw new RuntimeException("oops");
+//        }
         gradient[1].Ea1Tv1(du(r2)/r2,dr);
         gradient[0].Ea1Tv1(-1,gradient[1]);
         return gradient;

@@ -321,6 +321,7 @@ public class LJMD extends Simulation {
             throw new RuntimeException(ex);
         }
         
+
         u = meterPE.getDataAsScalar();
         System.out.println("Final Potential energy: "+u);
         System.out.println("Final Wall force: "+meterWF.getDataAsScalar());
@@ -374,7 +375,7 @@ public class LJMD extends Simulation {
         public double T = 2.0;
         public long steps = 10000;
         public double tStep = 0.0025;
-        public boolean graphics = false;
+        public boolean graphics = true;
         public String lammpsFile = "";
         public boolean fixedWall = true;
         public double spring = 0.3;

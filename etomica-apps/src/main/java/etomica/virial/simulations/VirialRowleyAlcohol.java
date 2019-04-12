@@ -78,7 +78,7 @@ public class VirialRowleyAlcohol {
     protected static boolean printapalooza = true;
 
     // to control whether or not graphics are used:
-    protected static boolean graphics = false;
+    protected static boolean graphics = true;
     protected static boolean plots = false;
     protected static double sigmaOC = 0.00001;
     protected static double sigmaOH = 0.05;

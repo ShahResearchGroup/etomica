@@ -87,6 +87,7 @@ public class SimLJHTTISuperSFMD extends Simulation {
         AtomType sphereType = species.getLeafType();
         potentialMaster.addPotential(potential, new AtomType[]{sphereType, sphereType});
 
+
         int cellRange = 2;
         potentialMaster.setRange(1.2 * rc);
         potentialMaster.setCellRange(cellRange);

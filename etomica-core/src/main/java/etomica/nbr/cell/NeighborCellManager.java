@@ -54,7 +54,12 @@ public class NeighborCellManager implements BoxCellManager, BoundaryEventListene
     public NeighborCellManager(Box box, double potentialRange) {
         this(box, potentialRange, null);
     }
-    
+
+
+//    public NeighborCellManager(Box box, double potentialRange, Space _space) {
+////        this(null, box, potentialRange, null, _space);
+////    }
+
     /**
      * Construct manager for neighbor cells in the given box.  The number
      * of cells in each dimension is given by nCells.  Position definition is
@@ -75,6 +80,7 @@ public class NeighborCellManager implements BoxCellManager, BoundaryEventListene
 
         setPotentialRange(potentialRange);
     }
+
 
     /**
      * @param doSuppress warnings about box length being too small.  This is

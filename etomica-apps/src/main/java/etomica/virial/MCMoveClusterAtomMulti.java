@@ -17,7 +17,8 @@ import etomica.util.random.IRandom;
  * Extension of MCMoveAtom that does trial in which several atom positions are
  * perturbed.  However, position of first atom is never altered.  
  */
-public class MCMoveClusterAtomMulti extends MCMoveAtom {
+public class
+MCMoveClusterAtomMulti extends MCMoveAtom {
 
     public MCMoveClusterAtomMulti(IRandom random, Space _space) {
         super(random, null, _space);

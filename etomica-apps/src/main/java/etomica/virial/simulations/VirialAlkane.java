@@ -11,12 +11,10 @@ import etomica.atom.iterator.ApiBuilder;
 import etomica.atom.iterator.ApiIndexList;
 import etomica.atom.iterator.Atomset3IteratorIndexList;
 import etomica.atom.iterator.Atomset4IteratorIndexList;
-import etomica.data.IDataInfo;
 import etomica.data.types.DataDouble;
 import etomica.graphics.*;
 import etomica.integrator.IntegratorEvent;
 import etomica.integrator.IntegratorListener;
-import etomica.integrator.IntegratorListenerAction;
 import etomica.potential.P2LennardJones;
 import etomica.potential.P3BondAngle;
 import etomica.potential.P4BondTorsion;
@@ -25,12 +23,8 @@ import etomica.space.Space;
 import etomica.space.Vector;
 import etomica.space3d.Space3D;
 import etomica.species.ISpecies;
-import etomica.units.*;
-import etomica.units.dimensions.Dimension;
-import etomica.units.dimensions.CompoundDimension;
-import etomica.units.dimensions.DimensionRatio;
-import etomica.units.dimensions.Quantity;
-import etomica.units.dimensions.Volume;
+import etomica.units.Kelvin;
+import etomica.units.Pixel;
 import etomica.util.Constants.CompassDirection;
 import etomica.util.ParameterBase;
 import etomica.util.ParseArgs;
@@ -235,7 +229,7 @@ public class VirialAlkane {
             panelParentGroup.add(averageBox.graphic(), java.awt.BorderLayout.WEST);
             panelParentGroup.add(errorBox.graphic(), java.awt.BorderLayout.EAST);
             simGraphic.getPanel().controlPanel.add(panelParentGroup, SimulationPanel.getVertGBC());
-            
+
             IAction pushAnswer = new IAction() {
                 DataDouble data = new DataDouble();
                 
@@ -249,18 +243,7 @@ public class VirialAlkane {
                     errorBox.putData(data);
                 }
             };
-            IDataInfo dataInfo = new DataDouble.DataInfoDouble("B"+nPoints, new CompoundDimension(new Dimension[]{new DimensionRatio(Volume.DIMENSION, Quantity.DIMENSION)}, new double[]{nPoints-1}));
-            Unit unit = new CompoundUnit(new Unit[]{new UnitRatio(Liter.UNIT, Mole.UNIT)}, new double[]{nPoints-1});
-            averageBox.putDataInfo(dataInfo);
-            averageBox.setLabel("average");
-            averageBox.setUnit(unit);
-            errorBox.putDataInfo(dataInfo);
-            errorBox.setLabel("error");
-            errorBox.setPrecision(2);
-            errorBox.setUnit(unit);
-            sim.integratorOS.getEventManager().addListener(new IntegratorListenerAction(pushAnswer));
-            
-            return;
+
         }
         
         // if running interactively, don't use the file

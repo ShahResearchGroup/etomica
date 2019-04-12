@@ -691,8 +691,8 @@ public class VirialCH4AlkaneEHMix {
             throw new RuntimeException("could not find a configuration for target system");
         }
         sim.accumulators[1].reset();// don't want to collect these data!!!!
-        
-        if (false) {
+
+        if (true) {
         	  double size = 10;
               sim.box[0].getBoundary().setBoxSize(Vector.of(new double[]{size, size, size}));
               sim.box[1].getBoundary().setBoxSize(Vector.of(new double[]{size, size, size}));
