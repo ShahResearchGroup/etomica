@@ -34,7 +34,7 @@ import java.util.Set;
 /**
  * Calculation for virial coefficients of hard spheres
  * Edited for calculating protein 1HRB
- * <p>
+ *
  * CHANGES: change for star-polymers. May 7, 2018
  */
 public class VirialPolymerOverlapWithMD {
@@ -119,10 +119,8 @@ public class VirialPolymerOverlapWithMD {
 //        sim.integrators[1].getMoveManager().removeMCMove(sim.mcMoveRotate[1]);
         ((MCMoveStepTracker) sim.mcMoveTranslate[1].getTracker()).setNoisyAdjustment(true);
         ((MCMoveStepTracker) sim.mcMoveRotate[1].getTracker()).setNoisyAdjustment(true);
-//        sim.integrators[1].getMoveManager().setFrequency();
 
         MCMoveClusterConformationMDTest mcMove = new MCMoveClusterConformationMDTest(sim, space, temperature, f, l, true, true);
-        System.exit(0);
         MCMoveClusterConformationMDTest mcMove2 = new MCMoveClusterConformationMDTest(sim, space, temperature, f, l, true, false);
         mcMove2.setConformationsList(mcMove.getConformationsList());
 

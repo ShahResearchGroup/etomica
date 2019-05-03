@@ -65,6 +65,7 @@ public class StarPolymerMD extends Simulation {
         boolean doMC = false;
         if (doMC) useNbrs = false;
         if (l < 30) useNbrs = false;
+        useNbrs = false;
         if (useNbrs) {
             potentialMaster = new PotentialMasterList(this, 2, space);
         } else {

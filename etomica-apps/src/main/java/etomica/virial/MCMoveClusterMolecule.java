@@ -48,7 +48,7 @@ public class MCMoveClusterMolecule extends MCMoveMolecule {
     public void acceptNotify() {
         super.acceptNotify();
         ((BoxCluster)box).acceptNotify();
-        System.out.println("acceptNotify");
+//        System.out.println("acceptNotify");
 //        System.out.println(atom+" accepted => "+atom.type.getPositionDefinition().position(atom));
     }
     

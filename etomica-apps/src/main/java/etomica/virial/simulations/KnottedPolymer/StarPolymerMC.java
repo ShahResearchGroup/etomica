@@ -11,13 +11,12 @@ import etomica.data.*;
 import etomica.data.history.HistoryCollapsingAverage;
 import etomica.data.meter.MeterPotentialEnergy;
 import etomica.data.meter.MeterRadiusGyration;
+import etomica.data.types.DataGroup;
 import etomica.graphics.DisplayBox;
 import etomica.graphics.DisplayPlot;
 import etomica.graphics.SimulationGraphic;
 import etomica.integrator.IntegratorListenerAction;
 import etomica.integrator.IntegratorMC;
-import etomica.integrator.mcmove.MCMoveAtom;
-import etomica.integrator.mcmove.MCMoveStepTracker;
 import etomica.nbr.CriterionInterMolecular;
 import etomica.nbr.NeighborCriterion;
 import etomica.nbr.PotentialMasterNbr;
@@ -79,18 +78,18 @@ public class StarPolymerMC extends Simulation {
             MCMoveUpdateConformation moveConformation = new MCMoveUpdateConformation(this, space, "./resource/f5L40.xyz");
             integratorMC.getMoveManager().addMCMove(moveConformation);
         } else {
-            MCMoveAtom atomMove = new MCMoveAtom(random, potentialMaster, space);
+//            MCMoveAtom atomMove = new MCMoveAtom(random, potentialMaster, space);
 //            integratorMC.getMoveManager().addMCMove(atomMove);
-            ((MCMoveStepTracker) atomMove.getTracker()).setNoisyAdjustment(true);
-            MCMoveWiggle wiggleMove = new MCMoveWiggle(potentialMaster, random, 1, l, space);
+//            ((MCMoveStepTracker) atomMove.getTracker()).setNoisyAdjustment(true);
+//            MCMoveWiggle wiggleMove = new MCMoveWiggle(potentialMaster, random, 1, l, space);
 //            integratorMC.getMoveManager().addMCMove(wiggleMove);
-            ((MCMoveStepTracker) wiggleMove.getTracker()).setNoisyAdjustment(true);
+//            ((MCMoveStepTracker) wiggleMove.getTracker()).setNoisyAdjustment(true);
             MCMoveRotateArm rotateArmMove = new MCMoveRotateArm(potentialMaster, random, 1, l, space);
             integratorMC.getMoveManager().addMCMove(rotateArmMove);
-            ((MCMoveStepTracker) rotateArmMove.getTracker()).setNoisyAdjustment(true);
+//            ((MCMoveStepTracker) rotateArmMove.getTracker()).setNoisyAdjustment(true);
             MCMoveBondLength bondMove = new MCMoveBondLength(potentialMaster, random, 1, l, space);
             integratorMC.getMoveManager().addMCMove(bondMove);
-            ((MCMoveStepTracker) bondMove.getTracker()).setNoisyAdjustment(true);
+//            ((MCMoveStepTracker) bondMove.getTracker()).setNoisyAdjustment(true);
         }
 
         ai = new ActivityIntegrate(integratorMC);
@@ -160,22 +159,17 @@ public class StarPolymerMC extends Simulation {
         if (args.length > 0) {
             ParseArgs.doParseArgs(params, args);
         } else {
-            params.fp = "./resource/rg.dat";
-            params.numSteps = 1000000L;
-            params.fv = 6;
-            params.lv = 80;
-            params.xsteps = 1000000L;
+            params.numSteps = 400000L;
+            params.fv = 3;
+            params.lv = 34;
         }
-
-        String fp = params.fp;
         long steps = params.numSteps;
         int f = params.fv;
         int l = params.lv;
-        long xsteps = params.xsteps;
 
         double temperature = 1.0;
         final int dataInterval = 100;
-        boolean graphics = true;
+        boolean graphics = false;
         double tStep = 0.005;
         boolean fromFile = false;
 
@@ -198,15 +192,6 @@ public class StarPolymerMC extends Simulation {
         meterRG.setBox(sim.getBox(0));
         System.out.println(String.format("Squared Radius of Gyration: %.8f\n", meterRG.getDataAsScalar()));
 
-        DataFork rgFork = new DataFork();
-        AccumulatorAverageCollapsing accRG = new AccumulatorAverageCollapsing();
-        AccumulatorHistory histRG = new AccumulatorHistory(new HistoryCollapsingAverage());
-        rgFork.addDataSink(accRG);
-        rgFork.addDataSink(histRG);
-        DataPumpListener rgPump = new DataPumpListener(meterRG, rgFork, dataInterval);
-        sim.integratorMC.getEventManager().addListener(rgPump);
-        sim.integratorMC.reset();
-
         MeterBondLength meterBL = new MeterBondLength(sim.box, f, l);
 
         if (graphics) {
@@ -220,6 +205,15 @@ public class StarPolymerMC extends Simulation {
             DiameterHashByType dh = (DiameterHashByType) simGraphic.getDisplayBox(sim.box).getDiameterHash();
             dh.setDiameter(sim.species.getAtomType(0), 1.0);
 //            sim.ai.setMaxSteps(1);
+            DataFork rgFork = new DataFork();
+            AccumulatorAverageCollapsing accRG = new AccumulatorAverageCollapsing();
+
+            AccumulatorHistory histRG = new AccumulatorHistory(new HistoryCollapsingAverage());
+            rgFork.addDataSink(accRG);
+            rgFork.addDataSink(histRG);
+            DataPumpListener rgPump = new DataPumpListener(meterRG, rgFork, dataInterval);
+            sim.integratorMC.getEventManager().addListener(rgPump);
+            sim.integratorMC.reset();
 
             DisplayPlot pePlot = new DisplayPlot();
             histPE.addDataSink(pePlot.getDataSet().makeDataSink());
@@ -250,37 +244,37 @@ public class StarPolymerMC extends Simulation {
             return;
         }
 
-        System.out.println("MD starts...");
+        System.out.println("Equilibration of " + steps + " steps starts...");
         long t1 = System.currentTimeMillis();
         sim.ai.setMaxSteps(steps);
         sim.getController().actionPerformed();
+        System.out.println("Equilibration finished! ");
+
+        DataFork rgFork = new DataFork();
+        AccumulatorAverageFixed accRG = new AccumulatorAverageFixed(1000);
+        rgFork.addDataSink(accRG);
+        DataPumpListener rgPump = new DataPumpListener(meterRG, rgFork, 10);
+        sim.integratorMC.getEventManager().addListener(rgPump);
+        sim.integratorMC.reset();
+
+        System.out.println("Production starts...");
+        sim.getController().reset();
+        sim.ai.setMaxSteps(1000 * 10 * 100);
+        sim.getController().actionPerformed();
+        System.out.println("Production finished! ");
         long t2 = System.currentTimeMillis();
-        System.out.println("MD finished! ");
         System.out.println("time : " + (t2 - t1) / 1000.0);
 
-        if (true) {
-            System.out.println();
-            System.out.println("MD begin for dumping rg^2 ");
-            int interval = 1000;
-            DataLogger dataLogger = new DataLogger();
-            DataPumpListener rgPumpListener = new DataPumpListener(meterRG, dataLogger, interval);
-            sim.integratorMC.getEventManager().addListener(rgPumpListener);
-            dataLogger.setFileName(fp);
-            dataLogger.setAppending(false);
-            DataArrayWriter writer = new DataArrayWriter();
-            writer.setIncludeHeader(false);
-            dataLogger.setDataSink(writer);
-            sim.getController().getEventManager().addListener(dataLogger);
-            long t3 = System.currentTimeMillis();
-            sim.getController().reset();
-            sim.ai.setMaxSteps(xsteps);
-            sim.getController().actionPerformed();
-            System.out.println("Dumping finished! ");
-            System.out.println("time: " + (t3 - t1) / 1000.0);
-        }
         System.out.println();
         System.out.println("Final Potential energy: " + meterPE.getDataAsScalar());
         System.out.println(String.format("Final rg^2 : %.8f\n", meterRG.getDataAsScalar()));
+
+        DataGroup rgBase = (DataGroup) accRG.getData();
+        IData averageRG = rgBase.getData(accRG.AVERAGE.index);
+        IData errorRG = rgBase.getData(accRG.ERROR.index);
+        IData correlationRG = rgBase.getData(accRG.BLOCK_CORRELATION.index);
+        System.out.print(String.format("Squared RG average: %20.15e error: %9.4e cor: %6.4f\n",
+                averageRG.getValue(0), errorRG.getValue(0), correlationRG.getValue(0)));
 
     }
 

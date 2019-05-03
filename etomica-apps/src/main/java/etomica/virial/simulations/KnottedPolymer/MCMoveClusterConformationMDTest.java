@@ -38,7 +38,7 @@ public class MCMoveClusterConformationMDTest extends MCMoveClusterMolecule {
         if (doCollecting) {
             double t1 = System.currentTimeMillis();
             equilibrating(f, l, temperature, 0.005, useNbrs);
-            collecting(2000);
+            collecting(100000);
             double t2 = System.currentTimeMillis();
             System.out.println("time spent on MD: " + (t2 - t1) / 1000.0);
         }
@@ -46,7 +46,7 @@ public class MCMoveClusterConformationMDTest extends MCMoveClusterMolecule {
 
     public void equilibrating(int f, int l, double temperature, double tStep, boolean useNbrs) {
         this.simMD = new StarPolymerMD(f, l, temperature, tStep, useNbrs);
-        long step = 1000000;
+        long step = 10000000;
         simMD.ai.setMaxSteps(step);
         System.out.println("Equilibrating MD for " + step + " steps ....");
         simMD.ai.actionPerformed();
@@ -54,7 +54,7 @@ public class MCMoveClusterConformationMDTest extends MCMoveClusterMolecule {
     }
 
     public void collecting(int sizeConformations) {
-        int steps = 1000;
+        int steps = 5000;
         System.out.println("Running MD production for " + sizeConformations + " Conformations ...");
 
         Box boxMD = simMD.getBox(0);

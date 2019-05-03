@@ -107,7 +107,7 @@ public class VirialLJD {
         targetCluster.setTemperature(temperature);
 
         if (blockSize == 0) blockSize = steps / 1000;
-        System.out.println(steps + " steps (" + (steps / blockSize) + " blocks of " + blockSize + ")");
+
 
         final SimulationVirialOverlap2 sim = new SimulationVirialOverlap2(space,new SpeciesSpheresMono(space, new ElementSimple("A")), nPoints, temperature,refCluster,targetCluster);
         ClusterAbstract[] targetDiagrams = new ClusterWheatleySoftDerivatives.ClusterRetrievePrimes[nDer];
