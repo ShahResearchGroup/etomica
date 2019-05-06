@@ -1,6 +1,7 @@
 package etomica.virial.simulations.KnottedPolymer;
 
 import etomica.action.IAction;
+import etomica.action.WriteConfiguration;
 import etomica.action.activity.ActivityIntegrate;
 import etomica.atom.AtomType;
 import etomica.atom.DiameterHashByType;
@@ -33,6 +34,7 @@ import etomica.species.ISpecies;
 import etomica.util.ParameterBase;
 import etomica.util.ParseArgs;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class StarPolymerMC extends Simulation {
@@ -159,8 +161,8 @@ public class StarPolymerMC extends Simulation {
         if (args.length > 0) {
             ParseArgs.doParseArgs(params, args);
         } else {
-            params.numSteps = 400000L;
-            params.fv = 3;
+            params.numSteps = 100000L;
+            params.fv = 7;
             params.lv = 34;
         }
         long steps = params.numSteps;
@@ -172,6 +174,7 @@ public class StarPolymerMC extends Simulation {
         boolean graphics = false;
         double tStep = 0.005;
         boolean fromFile = false;
+        boolean writeConf = false;
 
         final StarPolymerMC sim = new StarPolymerMC(f, l, temperature, tStep, fromFile);
 
@@ -244,6 +247,24 @@ public class StarPolymerMC extends Simulation {
             return;
         }
 
+        if (writeConf) {
+            WriteConfiguration writeConfigurationd = new WriteConfiguration(sim.getSpace());
+            writeConfigurationd.setBox(sim.box);
+            writeConfigurationd.setConfName("initial conf");
+            File file = new File("./resource/init_f" + f);
+            writeConfigurationd.setFileName("./resource/init_f" + f);
+            writeConfigurationd.actionPerformed();
+            sim.ai.setMaxSteps(steps);
+            sim.getController().actionPerformed();
+
+            writeConfigurationd.setConfName("new conf");
+            File file2 = new File("./resource/newConf_f" + f);
+            writeConfigurationd.setFileName("./resource/newConf_f" + f);
+            writeConfigurationd.actionPerformed();
+            System.out.println("Finished writing configurations");
+            System.exit(0);
+        }
+
         System.out.println("Equilibration of " + steps + " steps starts...");
         long t1 = System.currentTimeMillis();
         sim.ai.setMaxSteps(steps);
@@ -314,7 +335,6 @@ public class StarPolymerMC extends Simulation {
         public int lv = 40;
         public int size = 1000;
         public int interval = 1000;
-        public long xsteps = 1000000;
     }
 
 }
